@@ -1,56 +1,116 @@
 <!DOCTYPE html>
-<html>
-<head>
-    <title>Login Page</title>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Code Generator</title>
+    <link
+      rel="stylesheet"
+      href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+    />
+    <script src="type-effect.js"></script>
     <style>
-        /* Add some basic styling to the login form */
-        body {
-            font-family: Arial, sans-serif;
-        }
-
-        .container {
-            width: 300px;
-            margin: 0 auto;
-            padding: 20px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-        }
-
-        input[type="text"],
-        input[type="password"] {
-            width: 100%;
-            padding: 10px;
-            margin-bottom: 10px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-        }
-
-        input[type="submit"] {
-            width: 100%;
-            padding: 10px;
-            background-color: #4CAF50;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-        }
+      body {
+        background-color: #f8f9fa;
+        font-family: Arial, sans-serif;
+      }
+      .container {
+        margin-top: 20px;
+        border: 1px solid #ced4da;
+        border-radius: 5px;
+        background-color: white;
+        box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+        padding: 20px;
+      }
+      #output-column {
+        background-color: #343a40;
+        color: white;
+        padding: 20px;
+        border-radius: 5px;
+        box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+      }
+      #input-column {
+        background-color: #e9ebed;
+        color: rgb(18, 17, 17);
+        padding: 20px;
+        border-radius: 5px;
+        box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+        margin-top: 10px;
+      }
+      .header {
+        background-color: #343a40;
+        color: white;
+        padding: 10px;
+        text-align: center;
+        border-top-left-radius: 5px;
+        border-top-right-radius: 5px;
+      }
+      .btn-generate {
+        background-color: #007bff;
+        border-color: #007bff;
+      }
+      .code-generate {
+        background-color: #cdd0c300;
+        color: antiquewhite;
+        border-color: #007bff;
+      }
+      pre {
+        white-space: pre-wrap; /* Since CSS 2.1 */
+        white-space: -moz-pre-wrap; /* Mozilla, since 1999 */
+        white-space: -pre-wrap; /* Opera 4-6 */
+        white-space: -o-pre-wrap; /* Opera 7 */
+        word-wrap: break-word; /* Internet Explorer 5.5+ */
+      }
     </style>
-</head>
-<body>
+  </head>
+  <body>
     <div class="container">
-        <h2>Login</h2>
-        <form id="loginForm">
-            <label for="username">Username:</label>
-            <input type="text" id="username" name="username" required>
-
-            <label for="password">Password:</label>
-            <input type="password" id="password" name="password" required>
-
-            <input type="submit" value="Login">
-        </form>
-        <p id="message"></p>
+      <div class="header">
+        <h1>Code Generator</h1>
+      </div>
+      <div class="row">
+        <div class="col-md-6 mt-5" id="input-column">
+          <pre><textarea rows="10" cols="55" id="codeToReview"></textarea></pre>
+          <button id="generateBtn" class="btn btn-primary btn-generate">
+            Get Answer
+          </button>
+        </div>
+        <div class="col-md-6 mt-5" id="output-column">
+          <h2>Result</h2>
+          <pre><code class="code-generate" id="generatedReviewResult"></code></pre>
+        </div>
+      </div>
     </div>
 
-    <script src="login.js"></script>
-</body>
+    <script>
+      const generateBtn = document.getElementById("generateBtn");
+
+      generateBtn.addEventListener("click", () => {
+        const selectedCode = document.getElementById("codeToReview").value;
+        const url = "http://localhost:3001/get-ai-help";//"http://localhost:3000/review-code"
+        document.getElementById("generatedReviewResult").innerText = "";
+
+        fetch(url, {
+          method: "POST",
+          headers: {
+            Accept: "application/json",
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            inputText: selectedCode,
+            agent:'code-review'
+          }),
+        })
+          .then((response) => response.json())
+          .then((response) => {
+            
+            if (JSON.stringify(response.error)) {
+              alert(response.error);
+            } else {
+              startTyping(response.result, 5, "generatedReviewResult");
+            }
+          });
+      });
+    </script>
+  </body>
 </html>
