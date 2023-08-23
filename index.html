@@ -9,6 +9,9 @@
   </head>
   <body>
     <div class="container">
+      <div class="loading-overlay" id="loading-overlay">
+        <div class="loading-spinner"></div>
+    </div>
       <div class="sidebar">
         <div class="user-info">AI-Lab SCG</div>
 
@@ -48,8 +51,11 @@
 
     <script>
       const generateBtn = document.getElementById("generateBtn");
+     
 
       generateBtn.addEventListener("click", () => {
+        const loadingOverlay = document.getElementById("loading-overlay");
+        loadingOverlay.style.display = "flex"; // Show loading overlay
         const userInput = document.getElementById("userInput").value;
         const aws_url =
           "https://mhifkgiv6trgxyvv73jci6tcai0mjshr.lambda-url.us-east-1.on.aws/";
@@ -70,6 +76,7 @@
         })
           .then((response) => response.json())
           .then((response) => {
+            loadingOverlay.style.display = "none";
             //startTyping(JSON.stringify(response), 5, "generatedesult");
             addMessage(response,true,'')
           });
