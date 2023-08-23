@@ -2,7 +2,10 @@
   "name": "al-lab-scg",
   "version": "1.0.0",
   "description": "For Internal AI Testing only for authorized users ",
-  "main": "index.html",
+  "main": "app.js",
   "author": "Shikhar Dadhich",
-  "license": "ISC"
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.18.2"
+  }
 }
