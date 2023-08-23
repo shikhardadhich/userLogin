@@ -4,8 +4,11 @@
   "description": "For Internal AI Testing only for authorized users ",
   "main": "index.html",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "mocha"
   },
   "author": "Shikhar Dadhich",
-  "license": "ISC"
+  "license": "ISC",
+  "dependencies": {
+    "mocha": "^10.2.0"
+  }
 }
