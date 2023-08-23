@@ -3,12 +3,6 @@
   "version": "1.0.0",
   "description": "For Internal AI Testing only for authorized users ",
   "main": "index.html",
-  "scripts": {
-    "test": "mocha"
-  },
   "author": "Shikhar Dadhich",
-  "license": "ISC",
-  "dependencies": {
-    "mocha": "^10.2.0"
-  }
+  "license": "ISC"
 }
