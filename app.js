@@ -2,7 +2,8 @@ const express = require('express');
 const path = require('path'); // Import the path module
 const bodyParser = require('body-parser');
 const app = express();
-const port =  80;
+const port = process.env.PORT || 1337;
+
 
 app.use(express.json());
 app.use(express.static(__dirname));
