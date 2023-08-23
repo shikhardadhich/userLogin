@@ -10,21 +10,21 @@ var i = 0;
 
 
 
-function typeWriter() {
+ function typeWriter() {
   
   if (i < txt.length) {
-    document.getElementById(destination).innerText += txt.charAt(i);
+    destination.innerText += txt.charAt(i);
     i++;
     setTimeout(typeWriter, speed);
   }
 }
-function startTyping(textParam, delayParam, destinationParam)
+async function startTyping(textParam, delayParam, destinationParam)
 {
   i =0 ;
   txt=textParam;
   speed=delayParam;
   currentChar=1;
   destination=destinationParam;
-  typeWriter();
+ await typeWriter();
 
 }

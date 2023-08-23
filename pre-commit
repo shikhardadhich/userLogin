@@ -1,0 +1,16 @@
+#!/bin/bash
+
+
+echo "****** Executing pre-commit shell script **"
+echo "------ Ghat GPT API CALL --------"
+echo "------ Ghat GPT API CALL --------"
+echo "------ Ghat GPT API CALL --------"
+echo "------ Ghat GPT API CALL --------"
+echo "------ Ghat GPT API CALL --------"
+echo "------ Ghat GPT API CALL --------"
+echo "******* END pre-commit shell script *****"
+
+
+
+# If all checks pass, allow the commit
+exit 0
