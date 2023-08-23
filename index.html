@@ -20,13 +20,13 @@
             <img src="avatar.jpeg" alt="User Avatar" />
           </div>
           <div class="user-name">
-            John Doe
+            Guest User
             <!-- Replace with the user's name -->
           </div>
         </div>
 
         <div>Select Model</div>
-        <select class="model-select">
+        <select class="model-select" id="model-select" onchange="getSelectedModel(event)">
           <option value="llama2">Llama 2</option>
           <option value="starcoder">StarCoder</option>
           <option value="openai">Open AI</option>
@@ -51,8 +51,17 @@
 
     <script>
       const generateBtn = document.getElementById("generateBtn");
-     
 
+     // Write a function to get show selected value from <select>
+      
+      function getSelectedModel(e) {
+        if(e.target.selectedIndex == 0 ) {
+          return true;
+        }else {
+          alert(e.target.options[e.target.selectedIndex].text + ' Comming Soon');
+          e.target.selectedIndex = 0;
+        }
+      }
       generateBtn.addEventListener("click", () => {
         const loadingOverlay = document.getElementById("loading-overlay");
         loadingOverlay.style.display = "flex"; // Show loading overlay
@@ -95,7 +104,7 @@
     languageSpan.textContent = "Agent";
     const copyButton = document.createElement("button");
     copyButton.className = "copy-code-button";
-    copyButton.textContent = "Copy Code";
+    copyButton.textContent = "Copy";
 
     copyButton.addEventListener("click", () => {
         // Logic to copy the message's text to clipboard
