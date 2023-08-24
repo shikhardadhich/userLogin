@@ -11,7 +11,7 @@
     <div class="container">
       <div class="loading-overlay" id="loading-overlay">
         <div class="loading-spinner"></div>
-    </div>
+      </div>
       <div class="sidebar">
         <div class="user-info">AI-Lab SCG</div>
 
@@ -26,7 +26,11 @@
         </div>
 
         <div>Select Model</div>
-        <select class="model-select" id="model-select" onchange="getSelectedModel(event)">
+        <select
+          class="model-select"
+          id="model-select"
+          onchange="getSelectedModel(event)"
+        >
           <option value="llama2">Llama 2</option>
           <option value="starcoder">StarCoder</option>
           <option value="openai">Open AI</option>
@@ -43,8 +47,6 @@
         </div>
         <div class="chat-history" id="chat-history">
           <!-- Chat history will be populated here -->
-
-          
         </div>
       </div>
     </div>
@@ -52,13 +54,15 @@
     <script>
       const generateBtn = document.getElementById("generateBtn");
 
-     // Write a function to get show selected value from <select>
-      
+      // Write a function to get show selected value from <select>
+
       function getSelectedModel(e) {
-        if(e.target.selectedIndex == 0 ) {
+        if (e.target.selectedIndex == 0) {
           return true;
-        }else {
-          alert(e.target.options[e.target.selectedIndex].text + ' Comming Soon');
+        } else {
+          alert(
+            e.target.options[e.target.selectedIndex].text + " Comming Soon"
+          );
           e.target.selectedIndex = 0;
         }
       }
@@ -68,7 +72,6 @@
         const userInput = document.getElementById("userInput").value;
         const aws_url =
           "https://mhifkgiv6trgxyvv73jci6tcai0mjshr.lambda-url.us-east-1.on.aws/";
-
 
         fetch(aws_url, {
           method: "POST",
@@ -83,64 +86,74 @@
             parameters: { max_new_tokens: 10000, top_p: 0.9, temperature: 0.6 },
           }),
         })
-          .then((response) => response.json())
           .then((response) => {
+            if (!response.ok) {
+              loadingOverlay.style.display = "none";
+              throw new Error(
+                "Network response was not ok: ${response.status}"
+              );
+            }
+            
+            return response.json();
+          })
+          .then((response) => {
+            alert(response);
             loadingOverlay.style.display = "none";
             //startTyping(JSON.stringify(response), 5, "generatedesult");
-            addMessage(response,true,'')
+            addMessage(response, true, "");
+          })
+          .catch((error) => {
+            loadingOverlay.style.display = "none";
+            alert("Some error occurred: " + error.message)
+            console.error("Fetch error:", error);
           });
       });
 
+      // Assume you have a function to add messages to the chat history
+      async function addMessage(message, isUser, languageType) {
+        const chatHistory = document.getElementById("chat-history");
+        const messageDiv = document.createElement("div");
+        messageDiv.className = isUser ? "user-message" : "response-message";
 
-     // Assume you have a function to add messages to the chat history
-    async function  addMessage(message, isUser, languageType) {
-    const chatHistory = document.getElementById("chat-history");
-    const messageDiv = document.createElement("div");
-    messageDiv.className = isUser ? "user-message" : "response-message";
+        const headerDiv = document.createElement("div");
+        headerDiv.className = "message-header";
+        const languageSpan = document.createElement("span");
+        languageSpan.textContent = "Agent";
+        const copyButton = document.createElement("button");
+        copyButton.className = "copy-code-button";
+        copyButton.textContent = "Copy";
 
-    const headerDiv = document.createElement("div");
-    headerDiv.className = "message-header";
-    const languageSpan = document.createElement("span");
-    languageSpan.textContent = "Agent";
-    const copyButton = document.createElement("button");
-    copyButton.className = "copy-code-button";
-    copyButton.textContent = "Copy";
+        copyButton.addEventListener("click", () => {
+          // Logic to copy the message's text to clipboard
+          const dummy = document.createElement("textarea");
+          document.body.appendChild(dummy);
+          dummy.value = message;
+          dummy.select();
+          document.execCommand("copy");
+          document.body.removeChild(dummy);
+          alert("Code copied to clipboard!");
+        });
 
-    copyButton.addEventListener("click", () => {
-        // Logic to copy the message's text to clipboard
-        const dummy = document.createElement("textarea");
-        document.body.appendChild(dummy);
-        dummy.value = message;
-        dummy.select();
-        document.execCommand("copy");
-        document.body.removeChild(dummy);
-        alert("Code copied to clipboard!");
-    });
+        headerDiv.appendChild(languageSpan);
+        headerDiv.appendChild(copyButton);
+        messageDiv.appendChild(headerDiv);
 
-    headerDiv.appendChild(languageSpan);
-    headerDiv.appendChild(copyButton);
-    messageDiv.appendChild(headerDiv);
+        const messageContentPre = document.createElement("pre");
+        const messageContentCode = document.createElement("code");
+        messageContentCode.className = "code-generate";
+        messageContentCode.id = "generatedesult";
 
-    const messageContentPre = document.createElement("pre");
-    const messageContentCode = document.createElement("code");
-    messageContentCode.className = "code-generate";
-    messageContentCode.id="generatedesult";
+        messageContentPre.appendChild(messageContentCode);
 
-    messageContentPre.appendChild(messageContentCode);
+        messageDiv.appendChild(messageContentPre);
 
-    messageDiv.appendChild(messageContentPre);
+        chatHistory.appendChild(messageDiv);
 
+        await startTyping(message, 5, messageContentCode);
 
-    chatHistory.appendChild(messageDiv);
-
-    await startTyping(message, 5,messageContentCode)
-    
-    // Scroll to the bottom of the chat history
-    chatHistory.scrollTop = chatHistory.scrollHeight;
-}
-
-
-
+        // Scroll to the bottom of the chat history
+        chatHistory.scrollTop = chatHistory.scrollHeight;
+      }
     </script>
   </body>
 </html>
