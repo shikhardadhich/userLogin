@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="stylesheet" href="/styles.css" />
     <script src="/type-effect.js"></script>
+    <script src="/aws-sagemaker.js"></script>
     <title>AL-Lab SCG</title>
   </head>
   <body>
@@ -35,6 +36,7 @@
           <option value="starcoder">StarCoder</option>
           <option value="openai">Open AI</option>
         </select>
+        <button id="login-btn">Login</button>
       </div>
       <div class="chat-container">
         <div class="user-input">
@@ -50,12 +52,49 @@
         </div>
       </div>
     </div>
-
+    <div id="login-modal" class="modal">
+      <div class="modal-content">
+        <span class="close">&times;</span>
+        <h2>Login</h2>
+        <form id="login-form">
+          <input type="text" placeholder="Username"  id="username" name="username"  required />
+          <input type="password" placeholder="Password" id="password" name="password" required />
+          <button type="submit">Login</button>
+        </form>
+        <div id="result"></div>
+      </div>
+    </div>
     <script>
       const generateBtn = document.getElementById("generateBtn");
-
+let key=""
       // Write a function to get show selected value from <select>
+      // Open the modal
+      document
+        .getElementById("login-btn")
+        .addEventListener("click", function () {
+          document.getElementById("login-modal").style.display = "block";
+        });
 
+        const credentialsForm = document.getElementById('login-form');
+        const resultDiv = document.getElementById('result');
+
+        credentialsForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            checkLogin();
+        });
+      // Close the modal
+      // document
+      //   .getElementsByClassName("close")[0]
+      //   .addEventListener("click", function () {
+      //     document.getElementById("login-modal").style.display = "none";
+      //   });
+
+      // Close the modal when clicking outside of it
+      // window.addEventListener("click", function (event) {
+      //   if (event.target == document.getElementById("login-modal")) {
+      //     document.getElementById("login-modal").style.display = "none";
+      //   }
+      // });
       function getSelectedModel(e) {
         if (e.target.selectedIndex == 0) {
           return true;
@@ -66,47 +105,71 @@
           e.target.selectedIndex = 0;
         }
       }
+
+    async function  checkLogin(){
+      const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+
+            const data = {
+                username,
+                password
+            };
+
+            try {
+                const response = await fetch('/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(data)
+                });
+
+                const responseData = await response.json();
+
+                if (response.ok) {
+                  key = responseData.message;
+                
+                  document.getElementById("login-modal").style.display = "none";
+                  
+                } else {
+                    alert( `<p>Error: ${responseData.message}</p>`);
+                }
+            } catch (error) {
+                console.error('Error:', error);
+            }
+
+            
+      }
       generateBtn.addEventListener("click", () => {
         const loadingOverlay = document.getElementById("loading-overlay");
         loadingOverlay.style.display = "flex"; // Show loading overlay
         const userInput = document.getElementById("userInput").value;
-        const aws_url =
-          "https://mhifkgiv6trgxyvv73jci6tcai0mjshr.lambda-url.us-east-1.on.aws/";
-
-        fetch(aws_url, {
-          method: "POST",
-
-          body: JSON.stringify({
-            inputs: [
-              [
-                { role: "system", content: "You are an expert code developer" },
-                { role: "user", content: userInput },
-              ],
-            ],
-            parameters: { max_new_tokens: 10000, top_p: 0.9, temperature: 0.2 },
-          }),
-        })
-          .then((response) => {
-            if (!response.ok) {
+        const url = "/get-ai-help";
+        try {
+          fetch(url, {
+            method: "POST",
+            headers: {
+              Accept: "application/json",
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              inputText: userInput,
+              mykey:key
+            }),
+          })
+            .then((response) => response.json())
+            .then((response) => {
               loadingOverlay.style.display = "none";
-              throw new Error(
-                "Network response was not ok: ${response.status}"
-              );
-            }
-            
-            return response.json();
-          })
-          .then((response) => {
-            
-            loadingOverlay.style.display = "none";
-            //startTyping(JSON.stringify(response), 5, "generatedesult");
-            addMessage(response, true, "");
-          })
-          .catch((error) => {
-            loadingOverlay.style.display = "none";
-            alert("Some error occurred: " + error.message)
-            console.error("Fetch error:", error);
-          });
+              if (JSON.stringify(response.error)) {
+                alert(response.error);
+              } else {
+                addMessage(response.result, true, "");
+              }
+            });
+        } catch (error) {
+          loadingOverlay.style.display = "none";
+          alert("Some error occurred: " + error);
+        }
       });
 
       // Assume you have a function to add messages to the chat history
